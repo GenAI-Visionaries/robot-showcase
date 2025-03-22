@@ -12,41 +12,42 @@
 <body>
     <header>
         <div class="container">
-            <h1>GenAI in Robotics Showcase</h1>
-            <p class="subtitle">Overview and demonstrations of GenAI in robotics</p>
+            <h1>When LLMs Get Their Bodies</h1>
+            <p class="subtitle">Demo: A Custom Robot That Thinks, Senses, and Learns to Perform Simple Tasks with Agentic AI</p>
         </div>
     </header>
 
     <main class="container">
-        <div class="video-controls">
-            <button id="prev-btn" class="nav-btn" aria-label="Previous video">
-                &lsaquo;
-            </button>
-            <div class="video-info">
-                <h2 id="video-title">Loading...</h2>
-                <div class="prompt-container">
-                    <p><em>"<span id="video-prompt">Loading...</span>"</em></p>
+        <div class="content-wrapper">
+            <!-- Left column: Info and thumbnails -->
+            <div class="info-column">
+                <div class="video-info">
+                    <h2 id="video-title">Loading...</h2>
+                    <div class="prompt-container">
+                        <p><em>"<span id="video-prompt">Loading...</span>"</em></p>
+                    </div>
+                </div>
+                
+                <div class="video-thumbnails-vertical" id="thumbnails-container">
+                    <!-- Thumbnails will be inserted here by JavaScript -->
                 </div>
             </div>
-            <button id="next-btn" class="nav-btn" aria-label="Next video">
-                &rsaquo;
-            </button>
-        </div>
-        
-        <div class="video-container">
-            <div id="player"></div>
-        </div>
-        
-        <div class="video-thumbnails" id="thumbnails-container">
-            <!-- Thumbnails will be inserted here by JavaScript -->
+            
+            <!-- Right column: Video player -->
+            <div class="video-column">
+                <div class="video-container">
+                    <div id="player"></div>
+                    <a id="youtube-link" href="#" target="_blank" class="youtube-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                            <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" fill="currentColor"/>
+                        </svg>
+                        View on YouTube
+                    </a>
+                </div>
+            </div>
         </div>
     </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; <span id="current-year"></span> Accenture. All rights reserved.</p>
-        </div>
-    </footer>
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script src="script.js"></script>

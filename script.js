@@ -83,6 +83,9 @@ function loadVideo(index) {
     document.getElementById('video-title').textContent = videoInfo.title;
     document.getElementById('video-prompt').textContent = videoInfo.prompt;
     
+    // Update YouTube link
+    document.getElementById('youtube-link').href = videoInfo.youtube_url;
+    
     // Hide or show prompt section based on is_overview flag
     // const promptSection = document.getElementById('prompt-container'); // by id
     const promptSection = document.querySelector('.prompt-container'); // by class
@@ -105,7 +108,13 @@ function loadVideo(index) {
     // Scroll the active thumbnail into view
     const activeThumb = document.querySelector('.thumbnail.active');
     if (activeThumb) {
-        activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        // Check if we're in mobile or desktop layout
+        const isVerticalLayout = window.innerWidth > 992;
+        activeThumb.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: isVerticalLayout ? 'nearest' : 'nearest', 
+            inline: isVerticalLayout ? 'nearest' : 'center' 
+        });
     }
 }
 
@@ -193,8 +202,6 @@ function createThumbnails() {
 
 // Set up event listeners
 document.addEventListener('DOMContentLoaded', () => {
-    // Set current year in footer
-    document.getElementById('current-year').textContent = new Date().getFullYear();
     
     // Create thumbnails
     createThumbnails();
