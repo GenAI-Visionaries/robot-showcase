@@ -1,29 +1,25 @@
 // Array of video data
 const videoData = [
     {
-        title: "Robot Navigation Demo",
-        youtube_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Replace with your actual YouTube URL
-        prompt: "Navigate through the obstacle course and reach the target zone."
+        title: "Overview",
+        youtube_url: "https://www.youtube.com/watch?v=Wo06M7FGnmE",
+        prompt: "",
+        is_overview: true
     },
     {
-        title: "Object Recognition",
-        youtube_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Replace with your actual YouTube URL
-        prompt: "Identify and sort the different colored blocks on the table."
+        title: "Chess Knight Move",
+        youtube_url: "https://www.youtube.com/watch?v=YzMdkn_229I",
+        prompt: "You are a knight chess piece located on B1. Take the pawn on C3."
     },
     {
-        title: "Voice Command Response",
-        youtube_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Replace with your actual YouTube URL
-        prompt: "Respond to voice commands for basic movement: forward, backward, turn left, turn right."
+        title: "\"M\" Letter Movement",
+        youtube_url: "https://www.youtube.com/watch?v=omPwNulGbBA",
+        prompt: "Move in the shape of the letter M."
     },
     {
-        title: "Autonomous Path Finding",
-        youtube_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Replace with your actual YouTube URL
-        prompt: "Find the shortest path through the maze without prior mapping."
-    },
-    {
-        title: "Human Interaction",
-        youtube_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Replace with your actual YouTube URL
-        prompt: "Follow a person while maintaining a safe distance and avoiding obstacles."
+        title: "Exploration and Escape",
+        youtube_url: "https://www.youtube.com/watch?v=ERLedJGS7rA",
+        prompt: "Explore the area. Then, run away when you find something scary."
     }
 ];
 
@@ -33,7 +29,26 @@ let currentVideoIndex = 0;
 
 // Initialize the YouTube player when API is ready
 function onYouTubeIframeAPIReady() {
-    loadVideo(currentVideoIndex);
+    // Create player with event handlers right from the start
+    player = new YT.Player('player', {
+        height: '100%',
+        width: '100%',
+        videoId: getYouTubeId(videoData[currentVideoIndex].youtube_url),
+        playerVars: {
+            'playsinline': 1,
+            'rel': 0,
+            'modestbranding': 1
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange,
+            'onError': onPlayerError
+        }
+    });
+    
+    // Update video info
+    document.getElementById('video-title').textContent = videoData[currentVideoIndex].title;
+    document.getElementById('video-prompt').textContent = videoData[currentVideoIndex].prompt;
 }
 
 // Extract YouTube video ID from URL
@@ -46,25 +61,27 @@ function getYouTubeId(url) {
 // Load a specific video
 function loadVideo(index) {
     const videoId = getYouTubeId(videoData[index].youtube_url);
+    const videoInfo = videoData[index];
     
-    if (!player) {
-        player = new YT.Player('player', {
-            height: '100%',
-            width: '100%',
-            videoId: videoId,
-            playerVars: {
-                'playsinline': 1,
-                'rel': 0,
-                'modestbranding': 1
-            }
-        });
-    } else {
+    // Show loading indicator
+    document.getElementById('player').classList.add('loading');
+    
+    if (player) {
         player.loadVideoById(videoId);
     }
     
     // Update video info
-    document.getElementById('video-title').textContent = videoData[index].title;
-    document.getElementById('video-prompt').textContent = videoData[index].prompt;
+    document.getElementById('video-title').textContent = videoInfo.title;
+    document.getElementById('video-prompt').textContent = videoInfo.prompt;
+    
+    // Hide or show prompt section based on is_overview flag
+    // const promptSection = document.getElementById('prompt-container'); // by id
+    const promptSection = document.querySelector('.prompt-container'); // by class
+    if (videoInfo.is_overview && videoInfo.is_overview === true) {
+        promptSection.style.display = 'none';
+    } else {
+        promptSection.style.display = 'block';
+    }
     
     // Update active thumbnail
     const thumbnails = document.querySelectorAll('.thumbnail');
@@ -81,6 +98,32 @@ function loadVideo(index) {
     if (activeThumb) {
         activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
+}
+
+// Handle player ready event
+function onPlayerReady(event) {
+    // Hide loading indicator when player is ready
+    document.getElementById('player').classList.remove('loading');
+}
+
+// Handle player state changes
+function onPlayerStateChange(event) {
+    // Hide loading indicator when video starts playing or is paused
+    if (event.data === YT.PlayerState.PLAYING || event.data === YT.PlayerState.PAUSED) {
+        document.getElementById('player').classList.remove('loading');
+    }
+    
+    // Show loading indicator when video is buffering
+    if (event.data === YT.PlayerState.BUFFERING) {
+        document.getElementById('player').classList.add('loading');
+    }
+}
+
+// Handle player error
+function onPlayerError(event) {
+    console.error("YouTube player error:", event.data);
+    // Remove loading indicator even if there's an error
+    document.getElementById('player').classList.remove('loading');
 }
 
 // Navigate to the next video
