@@ -29,6 +29,8 @@ let currentVideoIndex = 0;
 
 // Initialize the YouTube player when API is ready
 function onYouTubeIframeAPIReady() {
+    console.log('YouTube API ready, initializing player...');
+    
     // Create player with event handlers right from the start
     player = new YT.Player('player', {
         height: '100%',
@@ -46,9 +48,12 @@ function onYouTubeIframeAPIReady() {
         }
     });
     
+    console.log('Player object created:', player);
+    
     // Update video info
     document.getElementById('video-title').textContent = videoData[currentVideoIndex].title;
     document.getElementById('video-prompt').textContent = videoData[currentVideoIndex].prompt;
+    console.log('Video info updated for:', videoData[currentVideoIndex].title);
 }
 
 // Extract YouTube video ID from URL
@@ -60,6 +65,7 @@ function getYouTubeId(url) {
 
 // Load a specific video
 function loadVideo(index) {
+    console.log('Loading video index:', index, 'Title:', videoData[index].title);
     const videoId = getYouTubeId(videoData[index].youtube_url);
     const videoInfo = videoData[index];
     
@@ -67,7 +73,10 @@ function loadVideo(index) {
     document.getElementById('player').classList.add('loading');
     
     if (player) {
+        console.log('Calling loadVideoById with ID:', videoId);
         player.loadVideoById(videoId);
+    } else {
+        console.warn('Player not initialized yet when trying to load video');
     }
     
     // Update video info
@@ -102,28 +111,46 @@ function loadVideo(index) {
 
 // Handle player ready event
 function onPlayerReady(event) {
+    console.log('Player ready event fired');
     // Hide loading indicator when player is ready
     document.getElementById('player').classList.remove('loading');
 }
 
 // Handle player state changes
 function onPlayerStateChange(event) {
+    console.log('Player state changed to:', event.data);
+    
     // Hide loading indicator when video starts playing or is paused
     if (event.data === YT.PlayerState.PLAYING || event.data === YT.PlayerState.PAUSED) {
         document.getElementById('player').classList.remove('loading');
+        console.log('Loading indicator removed - video playing or paused');
     }
     
     // Show loading indicator when video is buffering
     if (event.data === YT.PlayerState.BUFFERING) {
         document.getElementById('player').classList.add('loading');
+        console.log('Loading indicator shown - video buffering');
     }
 }
 
 // Handle player error
 function onPlayerError(event) {
     console.error("YouTube player error:", event.data);
+    console.log("Error code explanation:", getYouTubeErrorMessage(event.data));
     // Remove loading indicator even if there's an error
     document.getElementById('player').classList.remove('loading');
+}
+
+// Helper function to translate YouTube error codes to messages
+function getYouTubeErrorMessage(errorCode) {
+    const errorMessages = {
+        2: "Invalid parameter value (check your video URL)",
+        5: "HTML5 player error",
+        100: "Video not found or removed",
+        101: "Video embedding not allowed",
+        150: "Video embedding not allowed (same as 101)"
+    };
+    return errorMessages[errorCode] || "Unknown error";
 }
 
 // Navigate to the next video
@@ -171,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Create thumbnails
     createThumbnails();
+    loadVideo(currentVideoIndex);
     
     // Set up navigation buttons
     document.getElementById('next-btn').addEventListener('click', nextVideo);
