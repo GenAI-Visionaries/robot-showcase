@@ -4,22 +4,26 @@ const videoData = [
         title: "Overview",
         youtube_url: "https://www.youtube.com/watch?v=Wo06M7FGnmE",
         prompt: "",
-        is_overview: true
+        is_overview: true,
+        release: "R1"
     },
     {
         title: "Chess Knight Move",
         youtube_url: "https://www.youtube.com/watch?v=YzMdkn_229I",
-        prompt: "You are a knight chess piece located on B1. Take the pawn on C3."
+        prompt: "You are a knight chess piece located on B1. Take the pawn on C3.",
+        release: "R2"
     },
     {
         title: "\"M\" Letter Movement",
         youtube_url: "https://www.youtube.com/watch?v=omPwNulGbBA",
-        prompt: "Move in the shape of the letter M."
+        prompt: "Move in the shape of the letter M.",
+        release: "R2"
     },
     {
         title: "Exploration and Escape",
         youtube_url: "https://www.youtube.com/watch?v=ERLedJGS7rA",
-        prompt: "Explore the area. Then, run away when you find something scary."
+        prompt: "Explore the area. Then, run away when you find something scary.",
+        release: "R2"
     }
 ];
 
@@ -174,30 +178,51 @@ function prevVideo() {
     loadVideo(currentVideoIndex);
 }
 
-// Create thumbnails for all videos
 function createThumbnails() {
     const container = document.getElementById('thumbnails-container');
-    
-    videoData.forEach((video, index) => {
-        const videoId = getYouTubeId(video.youtube_url);
-        const thumbnail = document.createElement('div');
-        thumbnail.className = 'thumbnail';
-        if (index === currentVideoIndex) {
-            thumbnail.classList.add('active');
+    container.innerHTML = ''; // Clear existing thumbnails
+
+    // Group videos by release
+    const groupedVideos = videoData.reduce((groups, video) => {
+        if (!groups[video.release]) {
+            groups[video.release] = [];
         }
-        
-        thumbnail.innerHTML = `
-            <img src="https://img.youtube.com/vi/${videoId}/mqdefault.jpg" alt="${video.title}">
-            <div class="thumbnail-title">${video.title}</div>
-        `;
-        
-        thumbnail.addEventListener('click', () => {
-            currentVideoIndex = index;
-            loadVideo(index);
+        groups[video.release].push(video);
+        return groups;
+    }, {});
+
+    // Create a flex container for thumbnails
+    const flexContainer = document.createElement('div');
+    flexContainer.className = 'thumbnails-flex-container';
+
+    // Populate the container with thumbnails
+    Object.keys(groupedVideos).forEach((release) => {
+        groupedVideos[release].forEach((video, index) => {
+            const videoId = getYouTubeId(video.youtube_url);
+            const thumbnail = document.createElement('div');
+            thumbnail.className = 'thumbnail';
+            if (videoData.indexOf(video) === currentVideoIndex) {
+                thumbnail.classList.add('active');
+            }
+
+            // Add release number and thumbnail content
+            thumbnail.innerHTML = `
+                <div class="release-badge">${release}</div>
+                <img src="https://img.youtube.com/vi/${videoId}/mqdefault.jpg" alt="${video.title}">
+                <div class="thumbnail-title">${video.title}</div>
+            `;
+
+            thumbnail.addEventListener('click', () => {
+                currentVideoIndex = videoData.indexOf(video);
+                loadVideo(currentVideoIndex);
+            });
+
+            flexContainer.appendChild(thumbnail);
         });
-        
-        container.appendChild(thumbnail);
     });
+
+    // Append the flex container to the main container
+    container.appendChild(flexContainer);
 }
 
 // Set up event listeners
